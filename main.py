@@ -1,130 +1,153 @@
-import tkinter
+import tkinter as tk
+from tkmacosx import Button
+
+# Constants for player symbols
+playerO = "O"
+playerX = "X"
+
+# Game variables
+curr_player = playerX
+game_over = False
+turns = 0
+score_X = 0
+score_O = 0
+
+# Colors
+color_yellow = "#FFD700"
+color_light_gray = "#D3D3D3"
+color_blue = "#00BFFF"
+color_red = "#FF4500"
+color_green = "#32CD32"
+color_dark = "#000000"
+color_tile = "#011111"
+color_white = "#ffffff"
+
+# Initialize the main window
+root = tk.Tk()
+root.title("Tic Tac Toe")
+root.configure(bg=color_dark)
+root.resizable(width=False, height=True)
 
 
+# Function to set a tile and update the board
 def set_tile(row, column):
-    global curr_player
+    global curr_player, game_over
 
-    if (game_over):
-        return
-
-    if board[row][column]["text"] != "":
+    if game_over or board[row][column]["text"] != "":
         return
 
     board[row][column]["text"] = curr_player
-
-    if curr_player == playerO:
-        curr_player = playerX
-    else:
-        curr_player = playerO
-
-    label["text"] = curr_player + "'s turn"
+    board[row][column]["fg"] = color_blue if curr_player == playerX else color_red
 
     check_winner()
 
+    curr_player = playerO if curr_player == playerX else playerX
+    label["text"] = f"{curr_player}'s Turn" if not game_over else label["text"]
 
+
+# Function to check if there is a winner or if the game is a draw
 def check_winner():
-    global turns, game_over
+    global turns, game_over, score_X, score_O
     turns += 1
 
+    # Check for a win
     for row in range(3):
-        if (board[row][0]["text"] == board[row][1]["text"] == board[row][2]["text"]
-                and board[row][0]["text"] != ""):
-            label.config(text=board[row][0]["text"] + " is the winner!", foreground=color_yellow)
-            for column in range(3):
-                board[row][column].config(foreground=color_yellow, background=color_light_gray)
+        if board[row][0]["text"] == board[row][1]["text"] == board[row][2]["text"] and board[row][0]["text"] != "":
+            highlight_winner(row, 0, row, 1, row, 2)
             game_over = True
+            update_score(board[row][0]["text"])
             return
 
     for column in range(3):
-        if (board[0][column]["text"] == board[1][column]["text"] == board[2][column]["text"]
-                and board[0][column]["text"] != ""):
-            label.config(text=board[0][column]["text"] + " is the winner!", foreground=color_yellow)
-            for row in range(3):
-                board[row][column].config(foreground=color_yellow, background=color_light_gray)
+        if board[0][column]["text"] == board[1][column]["text"] == board[2][column]["text"] and board[0][column]["text"] != "":
+            highlight_winner(0, column, 1, column, 2, column)
             game_over = True
+            update_score(board[0][column]["text"])
             return
 
-    if (board[0][0]["text"] == board[1][1]["text"] == board[2][2]["text"]
-            and board[0][0]["text"] != ""):
-        label.config(text=board[0][0]["text"] + " is the winner!", foreground=color_yellow)
-        for i in range(3):
-            board[i][i].config(foreground=color_yellow, background=color_light_gray)
+    if board[0][0]["text"] == board[1][1]["text"] == board[2][2]["text"] and board[0][0]["text"] != "":
+        highlight_winner(0, 0, 1, 1, 2, 2)
         game_over = True
+        update_score(board[0][0]["text"])
         return
 
-    if (board[0][2]["text"] == board[1][1]["text"] == board[2][0]["text"]
-            and board[0][2]["text"] != ""):
-        label.config(text=board[0][2]["text"] + " is the winner!", foreground=color_yellow)
-        board[0][2].config(foreground=color_yellow, background=color_light_gray)
-        board[1][1].config(foreground=color_yellow, background=color_light_gray)
-        board[2][0].config(foreground=color_yellow, background=color_light_gray)
+    if board[0][2]["text"] == board[1][1]["text"] == board[2][0]["text"] and board[0][2]["text"] != "":
+        highlight_winner(0, 2, 1, 1, 2, 0)
         game_over = True
+        update_score(board[0][2]["text"])
         return
 
-    if (turns == 9):
+    # Check for a draw
+    if turns == 9:
+        label.config(text="It's a Draw!", fg=color_green)
         game_over = True
-        label.config(text="Tie!", foreground=color_yellow)
 
 
-def new_game():
-    global turns, game_over
+# Function to highlight the winning tiles
+def highlight_winner(r1, c1, r2, c2, r3, c3):
+    for (r, c) in [(r1, c1), (r2, c2), (r3, c3)]:
+        board[r][c].config(fg=color_yellow, bg=color_light_gray)
+    label.config(text=f"{board[r1][c1]['text']} Wins!", fg=color_yellow)
 
-    turns = 0
+
+def update_score(winner):
+    global score_X, score_O
+    if winner == playerX:
+        score_X += 1
+    else:
+        score_O += 1
+    score_label.config(text=f"Score - X: {score_X}  O: {score_O}")
+
+
+# Function to reset the game
+def reset_game():
+    global game_over, turns, curr_player
     game_over = False
-
-    label.config(text=curr_player + "'s turn", foreground="white")
+    turns = 0
+    curr_player = playerX
+    label.config(text=f"{curr_player}'s Turn", fg=color_blue)
 
     for row in range(3):
         for column in range(3):
-            board[row][column].config(text="", foreground=color_blue, background=color_gray)
+            board[row][column].config(text="", fg=color_white, bg=color_dark)
 
 
-playerX = "X"
-playerO = "O"
-curr_player = playerX
-board = [[0, 0, 0],
-         [0, 0, 0],
-         [0, 0, 0]]
+# Create the board
+board = [[None for _ in range(3)] for _ in range(3)]
 
-color_blue = "#4584b6"
-color_yellow = "#ffde57"
-color_gray = "#343434"
-color_light_gray = "#646464"
+for row in range(3):
+    for column in range(3):
+        button = Button(root, text="", font=("Consolas", 36, "bold"), width=150, height=150, bg=color_tile,
+            fg='#5F4B8B', borderless=1,
+            activebackground=('#AE0E36', '#D32E5E'),
+            activeforeground='#E69A8D', command= lambda r=row, c=column: set_tile(r, c))
 
-turns = 0
-game_over = False
+        button.grid(row=row, column=column, padx=5, pady=5)
+        board[row][column] = button
 
-window = tkinter.Tk()
-window.title("Tic Tac Toe")
-window.resizable(False, False)
+# Label to display current player and game messages
+label = tk.Label(root, text=f"{curr_player}'s Turn", font=("Consolas", 20, "bold"), bg=color_dark, fg=color_white)
+label.grid(row=3, column=0, columnspan=3, pady=(10, 0))
 
-frame = tkinter.Frame(window)
-label = tkinter.Label(frame, text=curr_player + "'s turn", font=("Consolas", 20), background=color_gray,
-                      foreground="white")
-label.grid(row=0, column=0, columnspan=3, sticky="we")
+# Scoreboard label
+score_label = tk.Label(root, text=f"Score - X: {score_X}  O: {score_O}", font=("Consolas", 16, "bold"), bg=color_dark, fg=color_white)
+score_label.grid(row=4, column=0, columnspan=3)
 
-for rows in range(3):
-    for columns in range(3):
-        board[rows][columns] = tkinter.Button(frame, text="", font=("Consolas", 50, "bold"),
-                                            background=color_gray, foreground=color_blue, width=4, height=1,
-                                            command=lambda row= rows, column= columns: set_tile(row, column))
-        board[rows][columns].grid(row=rows + 1, column=columns)
+# Reset button
+reset_button = tk.Button(root, text="Reset Game", font=("Consolas", 16, "bold"), command=reset_game, bg=color_light_gray)
+reset_button.grid(row=5, column=0, columnspan=3, pady=10)
 
-button = tkinter.Button(frame, text="restart", font=("Consolas", 20), background=color_gray,
-                        foreground="white", command=new_game)
-button.grid(row=4, column=0, columnspan=3, sticky="we")
+root.update()
 
-frame.pack()
-
-
-window.update()
-window_width = window.winfo_width()
-window_height = window.winfo_height()
-screen_width = window.winfo_screenwidth()
-screen_height = window.winfo_screenheight()
+window_width = root.winfo_width()
+window_height = root.winfo_height()
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
 
 window_x = int((screen_width / 2) - (window_width / 2))
 window_y = int((screen_height / 2) - (window_height / 2))
 
-window.geometry(f"{window_width}x{window_height}+{window_x}+{window_y}")
-window.mainloop()
+root.geometry(f"{window_width}x{window_height}+{window_x}+{window_y}")
+
+# Start the main loop
+root.mainloop()
