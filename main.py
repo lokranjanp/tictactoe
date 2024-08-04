@@ -1,5 +1,6 @@
 import tkinter
 
+
 def set_tile(row, column):
     global curr_player
 
@@ -102,12 +103,12 @@ label = tkinter.Label(frame, text=curr_player + "'s turn", font=("Consolas", 20)
                       foreground="white")
 label.grid(row=0, column=0, columnspan=3, sticky="we")
 
-for row in range(3):
-    for column in range(3):
-        board[row][column] = tkinter.Button(frame, text="", font=("Consolas", 50, "bold"),
+for rows in range(3):
+    for columns in range(3):
+        board[rows][columns] = tkinter.Button(frame, text="", font=("Consolas", 50, "bold"),
                                             background=color_gray, foreground=color_blue, width=4, height=1,
-                                            command=lambda row=row, column=column: set_tile(row, column))
-        board[row][column].grid(row=row + 1, column=column)
+                                            command=lambda row= rows, column= columns: set_tile(row, column))
+        board[rows][columns].grid(row=rows + 1, column=columns)
 
 button = tkinter.Button(frame, text="restart", font=("Consolas", 20), background=color_gray,
                         foreground="white", command=new_game)
