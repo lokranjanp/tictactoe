@@ -1,5 +1,5 @@
 import tkinter as tk
-# from tkmacosx import Button
+from tkmacosx import Button
 
 # Constants for player symbols
 playerO = "O"
@@ -19,13 +19,8 @@ color_blue = "#00BFFF"
 color_red = "#FF4500"
 color_green = "#32CD32"
 color_dark = "#000000"
-color_tile = "#34495e"
+color_tile = "#011111"
 color_white = "#ffffff"
-color_sky_blue = "#3498db"  # Sky Blue for Player X
-color_soft_red = "#e74c3c"  # Soft Red for Player O
-color_bright_yellow = "#f1c40f"  # Bright Yellow for highlights
-color_dark_gray = "#2c3e50"  # Dark Gray for buttons and background
-color_white = "#ecf0f1"  # White for text
 
 # Initialize the main window
 root = tk.Tk()
@@ -117,13 +112,16 @@ def reset_game():
             board[row][column].config(text="", fg=color_white, bg=color_dark)
 
 
-# Create the game board
+# Create the board
 board = [[None for _ in range(3)] for _ in range(3)]
+
 for row in range(3):
     for column in range(3):
-        button = tk.Button(root, text="", font=("Consolas", 36, "bold"), width=5, height=2,
-                           highlightbackground=color_dark_gray,
-                           command=lambda r=row, c=column: set_tile(r, c))
+        button = Button(root, text="", font=("Consolas", 36, "bold"), width=150, height=150, bg=color_tile,
+            fg='#5F4B8B', borderless=1,
+            activebackground=('#AE0E36', '#D32E5E'),
+            activeforeground='#E69A8D', command= lambda r=row, c=column: set_tile(r, c))
+
         button.grid(row=row, column=column, padx=5, pady=5)
         board[row][column] = button
 
