@@ -1,18 +1,16 @@
 import tkinter as tk
+import random
 from tkmacosx import Button
 
-# Constants for player symbols
 playerO = "O"
 playerX = "X"
 
-# Game variables
 curr_player = playerX
 game_over = False
 turns = 0
 score_X = 0
 score_O = 0
 
-# Colors
 color_yellow = "#FFD700"
 color_light_gray = "#D3D3D3"
 color_blue = "#00BFFF"
@@ -22,14 +20,12 @@ color_dark = "#000000"
 color_tile = "#011111"
 color_white = "#ffffff"
 
-# Initialize the main window
 root = tk.Tk()
 root.title("Tic Tac Toe")
 root.configure(bg=color_dark)
 root.resizable(width=False, height=True)
 
 
-# Function to set a tile and update the board
 def set_tile(row, column):
     global curr_player, game_over
 
@@ -45,12 +41,10 @@ def set_tile(row, column):
     label["text"] = f"{curr_player}'s Turn" if not game_over else label["text"]
 
 
-# Function to check if there is a winner or if the game is a draw
 def check_winner():
     global turns, game_over, score_X, score_O
     turns += 1
 
-    # Check for a win
     for row in range(3):
         if board[row][0]["text"] == board[row][1]["text"] == board[row][2]["text"] and board[row][0]["text"] != "":
             highlight_winner(row, 0, row, 1, row, 2)
@@ -77,13 +71,11 @@ def check_winner():
         update_score(board[0][2]["text"])
         return
 
-    # Check for a draw
     if turns == 9:
         label.config(text="It's a Draw!", fg=color_green)
         game_over = True
 
 
-# Function to highlight the winning tiles
 def highlight_winner(r1, c1, r2, c2, r3, c3):
     for (r, c) in [(r1, c1), (r2, c2), (r3, c3)]:
         board[r][c].config(fg=color_yellow, bg=color_light_gray)
@@ -99,12 +91,11 @@ def update_score(winner):
     score_label.config(text=f"Score - X: {score_X}  O: {score_O}")
 
 
-# Function to reset the game
 def reset_game():
     global game_over, turns, curr_player
     game_over = False
     turns = 0
-    curr_player = playerX
+    curr_player = random.choice([playerX, playerO])
     label.config(text=f"{curr_player}'s Turn", fg=color_blue)
 
     for row in range(3):
@@ -112,7 +103,6 @@ def reset_game():
             board[row][column].config(text="", fg=color_white, bg=color_dark)
 
 
-# Create the board
 board = [[None for _ in range(3)] for _ in range(3)]
 
 for row in range(3):
@@ -125,15 +115,12 @@ for row in range(3):
         button.grid(row=row, column=column, padx=5, pady=5)
         board[row][column] = button
 
-# Label to display current player and game messages
 label = tk.Label(root, text=f"{curr_player}'s Turn", font=("Consolas", 20, "bold"), bg=color_dark, fg=color_white)
 label.grid(row=3, column=0, columnspan=3, pady=(10, 0))
 
-# Scoreboard label
 score_label = tk.Label(root, text=f"Score - X: {score_X}  O: {score_O}", font=("Consolas", 16, "bold"), bg=color_dark, fg=color_white)
 score_label.grid(row=4, column=0, columnspan=3)
 
-# Reset button
 reset_button = tk.Button(root, text="Reset Game", font=("Consolas", 16, "bold"), command=reset_game, bg=color_light_gray)
 reset_button.grid(row=5, column=0, columnspan=3, pady=10)
 
@@ -149,5 +136,4 @@ window_y = int((screen_height / 2) - (window_height / 2))
 
 root.geometry(f"{window_width}x{window_height}+{window_x}+{window_y}")
 
-# Start the main loop
 root.mainloop()
